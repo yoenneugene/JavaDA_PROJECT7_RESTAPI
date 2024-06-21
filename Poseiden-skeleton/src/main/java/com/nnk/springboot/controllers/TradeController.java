@@ -1,6 +1,10 @@
 package com.nnk.springboot.controllers;
 
 import com.nnk.springboot.domain.Trade;
+import com.nnk.springboot.repositories.TradeRepository;
+import com.nnk.springboot.repositories.UserRepository;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -9,16 +13,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.validation.Valid;
+
 
 @Controller
 public class TradeController {
     // TODO: Inject Trade service
+    @Autowired
+    private TradeRepository tradeRepository;
 
     @RequestMapping("/trade/list")
     public String home(Model model)
     {
-        // TODO: find all Trade, add to model
+        model.addAttribute("trades", tradeRepository.findAll());
         return "trade/list";
     }
 
@@ -29,8 +35,21 @@ public class TradeController {
 
     @PostMapping("/trade/validate")
     public String validate(@Valid Trade trade, BindingResult result, Model model) {
-        // TODO: check data valid and save to db, after saving return Trade list
-        return "trade/add";
+        // Vérifier si le formulaire contient des erreurs de validation
+        if (result.hasErrors()) {
+            // Si des erreurs sont présentes, renvoyer le formulaire pour correction
+            return "trade/add";
+        }
+
+        // Si les données sont valides, sauvegarder l'objet Trade dans la base de données
+        tradeRepository.save(trade);
+
+        // Ajouter la liste des Trade au modèle pour affichage
+        model.addAttribute("trades", tradeRepository.findAll());
+
+        // Rediriger vers la liste des Trade (vue affichant la liste des trades)
+        return "trade/list";
+
     }
 
     @GetMapping("/trade/update/{id}")

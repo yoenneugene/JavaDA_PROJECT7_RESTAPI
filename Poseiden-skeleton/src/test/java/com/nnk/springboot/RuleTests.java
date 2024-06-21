@@ -21,7 +21,13 @@ public class RuleTests {
 
 	@Test
 	public void ruleTest() {
-		RuleName rule = new RuleName("Rule Name", "Description", "Json", "Template", "SQL", "SQL Part");
+		RuleName rule = new RuleName();
+		rule.setName("Rule Name");
+		rule.setDescription("Description of Rule 1");
+		rule.setJson("{\"key\": \"value\"}");
+		rule.setTemplate("Template for Rule 1");
+		rule.setSqlStr("SELECT * FROM table WHERE condition");
+		rule.setSqlPart("WHERE condition");
 
 		// Save
 		rule = ruleNameRepository.save(rule);

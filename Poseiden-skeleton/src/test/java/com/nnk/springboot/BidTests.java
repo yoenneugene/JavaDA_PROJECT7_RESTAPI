@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +22,29 @@ public class BidTests {
 
 	@Test
 	public void bidListTest() {
-		BidList bid = new BidList("Account Test", "Type Test", 10d);
+		BidList bid = new BidList();
+		bid.setBidListId(1);
+		bid.setAccount("Account123");
+		bid.setType("TypeXYZ");
+		bid.setBidQuantity(10.0);
+		bid.setAskQuantity(50.0);
+		bid.setBid(10.0);
+		bid.setAsk(11.0);
+		bid.setBenchmark("BenchmarkXYZ");
+		bid.setBidListDate(new Timestamp(System.currentTimeMillis()));
+		bid.setCommentary("Comment on bid list");
+		bid.setSecurity("SecurityXYZ");
+		bid.setStatus("Open");
+		bid.setTrader("John Doe");
+		bid.setBook("BookABC");
+		bid.setCreationName("Admin");
+		bid.setCreationDate(new Timestamp(System.currentTimeMillis()));
+		bid.setRevisionName("Manager");
+		bid.setRevisionDate(new Timestamp(System.currentTimeMillis()));
+		bid.setDealName("Deal123");
+		bid.setDealType("New");
+		bid.setSourceListId("Source456");
+		bid.setSide("Buy");
 
 		// Save
 		bid = bidListRepository.save(bid);

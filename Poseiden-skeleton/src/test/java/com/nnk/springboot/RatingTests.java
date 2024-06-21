@@ -21,7 +21,11 @@ public class RatingTests {
 
 	@Test
 	public void ratingTest() {
-		Rating rating = new Rating("Moodys Rating", "Sand PRating", "Fitch Rating", 10);
+		Rating rating = new Rating();
+		rating.setMoodysRating("A1");
+		rating.setSandPRating("A+");
+		rating.setFitchRating("AA-");
+		rating.setOrderNumber(10);
 
 		// Save
 		rating = ratingRepository.save(rating);

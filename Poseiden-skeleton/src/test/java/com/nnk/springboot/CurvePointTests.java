@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +23,20 @@ public class CurvePointTests {
 
 	@Test
 	public void curvePointTest() {
-		CurvePoint curvePoint = new CurvePoint(10, 10d, 30d);
+		Timestamp asOfDate = Timestamp.valueOf("2024-06-21 12:00:00");
+
+		// Création de Timestamp pour "creationDate" au 20 juin 2024, 12:00:00
+		Timestamp creationDate = Timestamp.valueOf("2024-06-20 12:00:00");
+
+
+		CurvePoint curvePoint = new CurvePoint(
+				null, // id (sera généré automatiquement par JPA)
+				10, // curveId
+				asOfDate, // asOfDate
+				5.0, // term
+				30.0, // value
+				creationDate // creationDate
+		);
 
 		// Save
 		curvePoint = curvePointRepository.save(curvePoint);
