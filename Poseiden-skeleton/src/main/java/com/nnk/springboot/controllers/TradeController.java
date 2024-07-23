@@ -5,6 +5,8 @@ import com.nnk.springboot.repositories.TradeRepository;
 import com.nnk.springboot.repositories.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,6 +26,11 @@ public class TradeController {
     @RequestMapping("/trade/list")
     public String home(Model model)
     {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        // Ajouter l'utilisateur connecté au modèle
+        model.addAttribute("username", username);
         model.addAttribute("trades", tradeRepository.findAll());
         return "trade/list";
     }
@@ -54,20 +61,56 @@ public class TradeController {
 
     @GetMapping("/trade/update/{id}")
     public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-        // TODO: get Trade by Id and to model then show to the form
+        Trade trade = tradeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid trade Id:" + id));
+
+        model.addAttribute("trade", trade);
         return "trade/update";
     }
 
     @PostMapping("/trade/update/{id}")
     public String updateTrade(@PathVariable("id") Integer id, @Valid Trade trade,
-                             BindingResult result, Model model) {
-        // TODO: check required fields, if valid call service to update Trade and return Trade list
+                              BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            trade.setTradeId(id); // Restaurer l'ID dans le modèle
+            return "trade/update";
+        }
+
+        Trade existingTrade = tradeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid trade Id:" + id));
+
+        existingTrade.setAccount(trade.getAccount());
+        existingTrade.setType(trade.getType());
+        existingTrade.setBuyQuantity(trade.getBuyQuantity());
+        existingTrade.setSellQuantity(trade.getSellQuantity());
+        existingTrade.setBuyPrice(trade.getBuyPrice());
+        existingTrade.setSellPrice(trade.getSellPrice());
+        existingTrade.setBenchmark(trade.getBenchmark());
+        existingTrade.setTradeDate(trade.getTradeDate());
+        existingTrade.setSecurity(trade.getSecurity());
+        existingTrade.setStatus(trade.getStatus());
+        existingTrade.setTrader(trade.getTrader());
+        existingTrade.setBook(trade.getBook());
+        existingTrade.setCreationName(trade.getCreationName());
+        existingTrade.setCreationDate(trade.getCreationDate());
+        existingTrade.setRevisionName(trade.getRevisionName());
+        existingTrade.setRevisionDate(trade.getRevisionDate());
+        existingTrade.setDealName(trade.getDealName());
+        existingTrade.setDealType(trade.getDealType());
+        existingTrade.setSourceListId(trade.getSourceListId());
+        existingTrade.setSide(trade.getSide());
+
+        // Enregistrer les modifications dans la base de données
+        tradeRepository.save(existingTrade);
         return "redirect:/trade/list";
     }
 
     @GetMapping("/trade/delete/{id}")
     public String deleteTrade(@PathVariable("id") Integer id, Model model) {
-        // TODO: Find Trade by Id and delete the Trade, return to Trade list
+        Trade trade = tradeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid trade Id:" + id));
+
+        tradeRepository.delete(trade);
         return "redirect:/trade/list";
     }
 }
